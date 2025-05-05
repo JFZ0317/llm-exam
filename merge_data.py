@@ -1,7 +1,5 @@
 import pandas as pd
-pd.set_option('display.max_columns', None)
-pd.set_option('display.max_colwidth', None)
-pd.set_option('display.width', 200)
+
 df_easy = pd.read_parquet("sft-data/easy/train.parquet")
 df_challenge = pd.read_parquet("sft-data/challenge/train.parquet")
 save_path = "sft-data/preprocess/train.parquet"
