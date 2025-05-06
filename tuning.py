@@ -8,27 +8,27 @@ model_name = "deepseek-r1-qwen-7b/deepseek-ai/DeepSeek-R1-Distill-Qwen-7B"
 tokenizer = AutoTokenizer.from_pretrained(model_name, trust_remote_code=True)
 model = AutoModelForCausalLM.from_pretrained(model_name, trust_remote_code=True, load_in_8bit=True, device_map="auto")
 def tokenize(example):
-
-    prompt_text = example["prompt"] + "\n" + "<think>\n"+example["origin"]+"</think>\n"
-    answer_text = "\n<Final Answer>:"+ example["answerKey"]
+    prompt_text = example["prompt"] + "\n" + "<think>\n" + example["origin"] + "</think>\n"
+    answer_text = "Answer:" + example["answerKey"]
 
     prompt_ids = tokenizer(prompt_text, add_special_tokens=False)["input_ids"]
     answer_ids = tokenizer(answer_text, add_special_tokens=False)["input_ids"]
 
     input_ids = prompt_ids + answer_ids
     attention_mask = [1] * len(input_ids)
-
     labels = [-100] * len(prompt_ids) + answer_ids
 
     max_len = 512
-    input_ids = input_ids[:max_len]
-    attention_mask = attention_mask[:max_len]
-    labels = labels[:max_len]
+    # Left-side truncation: keep the most recent tokens
+    input_ids = input_ids[-max_len:]
+    attention_mask = attention_mask[-max_len:]
+    labels = labels[-max_len:]
 
+    # Padding if needed
     pad_len = max_len - len(input_ids)
-    input_ids += [tokenizer.pad_token_id] * pad_len
-    attention_mask += [0] * pad_len
-    labels += [-100] * pad_len
+    input_ids = [tokenizer.pad_token_id] * pad_len + input_ids
+    attention_mask = [0] * pad_len + attention_mask
+    labels = [-100] * pad_len + labels
 
     return {
         "input_ids": input_ids,
