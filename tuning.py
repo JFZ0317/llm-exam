@@ -8,8 +8,8 @@ model_name = "deepseek-r1-qwen-7b/deepseek-ai/DeepSeek-R1-Distill-Qwen-7B"
 tokenizer = AutoTokenizer.from_pretrained(model_name, trust_remote_code=True)
 model = AutoModelForCausalLM.from_pretrained(model_name, trust_remote_code=True, load_in_8bit=True, device_map="auto")
 def tokenize(example):
-    prompt_text = example["prompt"] + "\n" + "<think>\n" + example["origin"] + "</think>\n"
-    answer_text = "Answer:" + example["answerKey"]
+    prompt_text = example["prompt"] + "\n" +"<think>\n" + example["origin"] + "</think>\n"
+    answer_text =  "Answer:" + example["answerKey"] + "\n<eos>"
 
     prompt_ids = tokenizer(prompt_text, add_special_tokens=False)["input_ids"]
     answer_ids = tokenizer(answer_text, add_special_tokens=False)["input_ids"]
@@ -53,7 +53,7 @@ training_args = TrainingArguments(
     gradient_accumulation_steps=4,
     logging_steps=100,
     save_steps=500,
-    num_train_epochs=3,
+    num_train_epochs=1,
     fp16=True,
     learning_rate=2e-5,
     save_total_limit=2,

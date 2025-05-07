@@ -20,7 +20,7 @@ base_model = AutoModelForCausalLM.from_pretrained(
 )
 
 # 加载 LoRA 和分类器
-if_lora = False
+if_lora = True
 if if_lora:
     model = PeftModel.from_pretrained(base_model, lora_model_path).eval()
 else:
@@ -57,7 +57,10 @@ def get_prompt(data):
     return template
 # 读取测试数据
 test_data = pd.read_csv("train.csv")
-test_data["question"] = test_data.apply(get_prompt, axis=1)
+test_data = pd.read_parquet("sft-data/preprocess/train_sft.parquet")
+# test_data["question"] = test_data.apply(get_prompt, axis=1)
+test_data["question"] = test_data["prompt"]
+test_data["answer"] = test_data["answerKey"]
 # 批量生成 <think>
 def batch_generate_think(prompts, max_tokens=512):
     think_inputs = prompts

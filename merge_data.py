@@ -9,7 +9,7 @@ def get_choices_column(df):
     df["B"] = choices_text.apply(lambda x: x[1] if len(x) > 1 else "")
     df["C"] = choices_text.apply(lambda x: x[2] if len(x) > 2 else "")
     df["D"] = choices_text.apply(lambda x: x[3] if len(x) > 3 else "")
-    df["E"] = choices_text.apply(lambda x: x[3] if len(x) > 3 else "")
+    df["E"] = choices_text.apply(lambda x: x[4] if len(x) > 4 else "")
     convert_num = {"1":"A","2":"B","3":"C","4":"D"}
     df["answerKey"] = df["answerKey"].apply(lambda x: convert_num[x] if x in convert_num.keys() else x)
     df = df.drop(columns="choices")
